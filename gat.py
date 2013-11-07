@@ -185,3 +185,15 @@ if __name__ == '__main__':
 # todo commit resilient to " and '
 # todo checkout/ get file better
 # todo rename working, stage, local, remote
+# todo megre commits
+# todo get a list of how versions looked in the past
+
+
+"""
+GIT_DIR_="$(git rev-parse --git-dir)"
+BRANCH="$(git rev-parse --symbolic --abbrev-ref $(git symbolic-ref HEAD))"
+"""
+
+# git config --global core.excludesfile '~/.gitignore'
+# git config --global push.default upstream
+

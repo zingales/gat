@@ -1,2 +1,2 @@
 #! /bin/bash
-python /Users/G/projects/gat/gat.py "$@"
+python ~/.gat/gat.py "$@"
