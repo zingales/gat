@@ -9,20 +9,23 @@ commit_str = 'commit'
 reset_str = 'reset'
 checkout_str = 'checkout'
 
+GIT_LOG_FIELDS = ["%h", "%an", "%s"]
+
+DEBUG = False
+
 
 def cmd(cmd_str):
     cmd_str = cmd_str.replace('*', '\*')
-    print cmd_str
+    if DEBUG:
+        print cmd_str
     # raw_input('waiting to run command')
     pipe = subprocess.Popen(cmd_str, shell=True, cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, error = pipe.communicate()
-    if out:
-        print out
     if error:
         print 'error'
         print error
     pipe.wait()
-    return
+    return out
 
 class LogEvent(object):
 
@@ -50,6 +53,7 @@ class Git(object):
                 cls.cmds[value] = cmd
 
     def _parse_log(self, branch):
+        '''
         if branch == '' or branch == 'HEAD':
             path = def_log
         else:
@@ -63,7 +67,12 @@ class Git(object):
                 log = LogEvent(infos[0], infos[1], event_infos[0], event_infos[1])
                 events.append(log)
         events.reverse()
-        return events
+        return events'''
+        git_log_input_format = '\x1f'.join(GIT_LOG_FIELDS) + '\x1e'
+        log = cmd('git log %s --format="%s"' % (branch, git_log_input_format,) )
+        log = log.strip('\n\x1e').split("\x1e")
+        return log
+
 
     def _get_hash(self, branch, commit_nu):
         branch = self._interpret_commit(branch)
@@ -91,6 +100,10 @@ class Git(object):
                 return raw
             hash = self._get_hash('HEAD', num)
             return hash
+
+    def _get_curr_branch(self):
+        return cmd("git rev-parse --symbolic --abbrev-ref $(git symbolic-ref HEAD)").strip('\n')
+
 
     def __init__(self):
         """
@@ -131,7 +144,7 @@ class Git(object):
         if len(params)> 0:
             branch = params[0]
         else:
-            branch = 'HEAD'
+            branch = self._get_curr_branch()
         logs = self._parse_log(branch)
         for num, log in enumerate(logs):
             print "%-2s %s" % (num, log)
@@ -165,7 +178,8 @@ if __name__ == '__main__':
     index = 1
     git = Git()
     # print Git.__mro__
-    print sys.argv
+    if DEBUG:
+        print sys.argv
     try:
         func = git.cmds[sys.argv[index]]
         func(git, sys.argv[index+1:])
@@ -187,11 +201,21 @@ if __name__ == '__main__':
 # todo rename working, stage, local, remote
 # todo megre commits
 # todo get a list of how versions looked in the past
+# todo sqashing commits
+# gat add should do add all the file you are tracking (including deltes)
+# gat wipe everything to the previous version. wipe head cleans everything, 
+#wipe file removes stores, wipe 
 
+''' hash, auther msg'''
+GIT_LOG_FIELDS = ["%h", "%an", "%s"]
+git_log_input_format = '%x1f'.join(GIT_LOG_FIELDS) + '%x1e'
 
 """
 GIT_DIR_="$(git rev-parse --git-dir)"
-BRANCH="$(git rev-parse --symbolic --abbrev-ref $(git symbolic-ref HEAD))"
+BRANCH="$()"
+
+git stash save " aldkfjasdlfj"
+git stash apply stash^{/ aldkfjasdlfj} <- or regular expression
 """
 
 # git config --global core.excludesfile '~/.gitignore'
