@@ -187,6 +187,8 @@ if __name__ == '__main__':
 # todo rename working, stage, local, remote
 # todo megre commits
 # todo get a list of how versions looked in the past
+# todo add gat ignore stmt that uses: git update-index --assume-unchanged <file>
+# also add inverse unignore: git update-index --no-assume-unchanged <file>
 
 
 """
